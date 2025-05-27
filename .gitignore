@@ -1,0 +1,21 @@
+# === 后端构建输出 ===
+/backendd/target
+/backendd/*.log
+
+# === 前端依赖和构建输出 ===
+/frontend/node_modules
+/frontend/dist
+
+# === 压缩包（全局忽略）===
+*.zip
+*.rar
+*.7z
+
+# === IDE 配置文件 ===
+.idea/
+*.iml
+.vscode/
+
+# === 操作系统生成的垃圾文件 ===
+.DS_Store
+Thumbs.db

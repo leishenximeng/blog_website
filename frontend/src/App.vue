@@ -1,0 +1,58 @@
+<!-- <script setup>
+import HelloWorld from './components/HelloWorld.vue'
+</script>
+
+<template>
+  <div>
+    <a href="https://vite.dev" target="_blank">
+      <img src="/vite.svg" class="logo" alt="Vite logo" />
+    </a>
+    <a href="https://vuejs.org/" target="_blank">
+      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
+    </a>
+  </div>
+  <HelloWorld msg="Vite + Vue" />
+</template>
+
+<style scoped>
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.vue:hover {
+  filter: drop-shadow(0 0 2em #42b883aa);
+}
+</style> -->
+
+<template>
+	<div>
+		<h1>Hello from vue</h1>
+		<p>{{ message }}</p>
+	</div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+
+const message = ref('Loading...')
+
+onMounted(async () => {
+	try {
+		const res = await fetch('/api/hello')
+		message.value = await res.text()
+	} catch (e) {
+		message.value = 'Failed to fetch message from backend'
+	}
+})
+</script>
+
+<style scoped>
+h1 {
+	color: #42b983;
+}
+</style>
