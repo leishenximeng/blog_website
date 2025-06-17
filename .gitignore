@@ -1,15 +1,19 @@
 # === 后端构建输出 ===
-/backendd/target
-/backendd/*.log
+/backend/target
+/backend/*.log
 
 # === 前端依赖和构建输出 ===
 /frontend/node_modules
 /frontend/dist
+/frontend/.env
 
-# === 压缩包（全局忽略）===
+# === 全局忽略压缩包 ===
 *.zip
 *.rar
 *.7z
+
+# === 日志文件 ===
+*.log
 
 # === IDE 配置文件 ===
 .idea/

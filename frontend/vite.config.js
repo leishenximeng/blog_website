@@ -5,8 +5,10 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
 	plugins: [vue()],
 	server: {
+		port: 5175, // ✅ 显式指定端口
+		// host: 'localhost', // 👈️ 添加这一行更保险
 		proxy: {
-			'/api': 'http://localhost:8080',
+			'/api': 'http://localhost:8081',
 		},
 	},
 })
