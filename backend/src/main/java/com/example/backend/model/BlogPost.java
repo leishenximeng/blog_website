@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class BlogPost {
     private Long id;
     private String title;
+    private String summary;    // ✅ 新增字段
     private String content;
     private String createdAt;
 

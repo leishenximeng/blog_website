@@ -1,11 +1,25 @@
 <template>
 	<div class="page-container">
-	  <h1>博客文章</h1>
-	  <p class="description">在这里，你可以浏览所有文章。</p>
-	  <p class="tip">后续将接入后端数据，实现文章分页和展示。</p>
+	  <h1>{{ title }}</h1>
+	  <p class="content">{{ content }}</p>
 	</div>
   </template>
   
   <script setup>
+  import { useRoute } from 'vue-router'
+  
+  const route = useRoute()
+  const title = route.params.title || '博客详情'
+  const content = route.params.content || '暂无内容'
   </script>
+  
+  <style scoped>
+  .content {
+	font-size: 1.2rem;
+	line-height: 1.8;
+	color: #333;
+	text-align: left;
+	margin-top: 1rem;
+  }
+  </style>
   
