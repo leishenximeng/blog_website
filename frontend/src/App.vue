@@ -1,29 +1,29 @@
 <template>
 	<div>
+		<!-- 导航栏 -->
 		<nav class="nav-bar">
-			<router-link to="/" class="nav-button" :class="{ active: isActive('/') }">
+			<router-link :to="{ name: 'Home' }" class="nav-button" :class="{ active: isActiveRoute('Home') }">
 				🏠 首页
 			</router-link>
-			<router-link to="/blog" class="nav-button" :class="{ active: isActive('/blog') }">
+			<router-link :to="{ name: 'Blog' }" class="nav-button" :class="{ active: isActiveRoute('Blog') }">
 				📚 博客
 			</router-link>
-			<router-link to="/profile" class="nav-button" :class="{ active: isActive('/profile') }">
+			<router-link :to="{ name: 'Profile' }" class="nav-button" :class="{ active: isActiveRoute('Profile') }">
 				🧑 关于
 			</router-link>
-			<!-- 🧠 想法 -->
-			<!-- 💡 灵感 -->
-			<!-- ✍️ 写作 -->
 		</nav>
 
-		<!-- ✅ 新增身份组件 -->
+		<!-- 身份组件 -->
 		<Identity />
 
+		<!-- 路由视图 -->
 		<div class="main-content">
 			<router-view />
 		</div>
 
+		<!-- Footer -->
 		<footer class="footer">
-			Nothing is Proven True, but Everything is constantly challenged.
+			Nothing is proven true, but everything is constantly challenged.
 		</footer>
 	</div>
 </template>
@@ -32,28 +32,33 @@
 import { useRoute } from 'vue-router'
 import Identity from './components/Identity.vue'
 
-
 const route = useRoute()
 
-// 判断当前路由是否匹配，用来给按钮加高亮样式
-function isActive(path) {
-	return route.path === path
+// 判断当前路由是否匹配，用于导航高亮
+function isActiveRoute(name) {
+	return route.name === name
 }
 </script>
 
 <style>
-/* ✅ 页面背景图样式（全局作用） */
+/* 全局背景图样式 */
 body {
 	margin: 0;
+	min-width: 320px;
+	min-height: 100vh;
+	background-color: #f0f2f5;
 	background-image: url('/images/bg.jpg');
 	background-size: cover;
 	background-position: center center;
 	background-attachment: fixed;
 	background-repeat: no-repeat;
-	font-family: 'Helvetica', sans-serif;
+	font-family: 'Segoe UI', Avenir, Helvetica, Arial, sans-serif;
+	font-weight: 400;
+	line-height: 1.6;
+	color: #2c3e50;
 }
 
-/* ✅ 保持原导航栏样式 */
+/* 导航栏样式 */
 .nav-bar {
 	display: flex;
 	gap: 2rem;
@@ -65,7 +70,7 @@ body {
 
 .nav-button {
 	padding: 0.8rem 1.2rem;
-	min-width: 120px;            /* ✅ 最小宽度统一 */
+	min-width: 120px;
 	font-size: 1rem;
 	color: #fff;
 	background-image: linear-gradient(315deg, #6a11cb 0%, #2575fc 74%);
@@ -89,6 +94,7 @@ body {
 	font-weight: bold;
 }
 
+/* Footer 样式 */
 .footer {
 	text-align: center;
 	padding: 1rem;

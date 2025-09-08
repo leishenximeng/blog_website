@@ -1,13 +1,12 @@
 package com.example.backend.controller;
 
+import com.example.backend.common.ApiResponse;
 import com.example.backend.mapper.BlogPostMapper;
 import com.example.backend.model.BlogPost;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -20,31 +19,58 @@ public class BlogController {
         this.blogPostMapper = blogPostMapper;
     }
 
+    // 查询所有文章
     @GetMapping
-    public List<BlogPost> getAllPosts() {
-        return blogPostMapper.findAll();
+    public ApiResponse<List<BlogPost>> getAllPosts() {
+        List<BlogPost> posts = blogPostMapper.findAll();
+        return ApiResponse.success(posts);
     }
 
+    // 根据ID查询文章
     @GetMapping("/{id}")
-    public BlogPost getPostById(@PathVariable Long id) {
-        return blogPostMapper.findById(id);
+    public ApiResponse<BlogPost> getPostById(@PathVariable Long id) {
+        BlogPost post = blogPostMapper.findById(id);
+        if (post == null) {
+            return ApiResponse.error("文章不存在");
+        }
+        return ApiResponse.success(post);
     }
 
+    // 创建文章
     @PostMapping
-    public ResponseEntity<String> createBlog(@RequestBody BlogPost blogPost) {
+    public ApiResponse<String> createBlog(@RequestBody BlogPost blogPost) {
         if (blogPost.getTitle() == null || blogPost.getContent() == null) {
-            return ResponseEntity.badRequest().body("标题和内容不能为空");
+            return ApiResponse.error("标题和内容不能为空");
         }
 
-        // 自动设置当前时间（如果前端没有传）
-        if (blogPost.getCreatedAt() == null || blogPost.getCreatedAt().isEmpty()) {
-            blogPost.setCreatedAt(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        if (blogPost.getCreatedAt() == null) {
+            blogPost.setCreatedAt(LocalDateTime.now());
         }
 
-        blogPostMapper.insert(blogPost); // 你需要在 mapper 中有 insert 方法
-        return ResponseEntity.ok("博客添加成功");
+        blogPostMapper.insert(blogPost);
+        return ApiResponse.success("博客添加成功");
+    }
+
+    // 更新文章
+    @PutMapping("/{id}")
+    public ApiResponse<String> updateBlog(@PathVariable Long id, @RequestBody BlogPost blogPost) {
+        BlogPost existing = blogPostMapper.findById(id);
+        if (existing == null) {
+            return ApiResponse.error("文章不存在");
+        }
+        blogPost.setId(id);
+        blogPostMapper.update(blogPost);
+        return ApiResponse.success("博客更新成功");
+    }
+
+    // 删除文章
+    @DeleteMapping("/{id}")
+    public ApiResponse<String> deleteBlog(@PathVariable Long id) {
+        BlogPost existing = blogPostMapper.findById(id);
+        if (existing == null) {
+            return ApiResponse.error("文章不存在");
+        }
+        blogPostMapper.delete(id);
+        return ApiResponse.success("博客删除成功");
     }
 }
-
-
-

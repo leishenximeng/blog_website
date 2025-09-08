@@ -1,5 +1,4 @@
 <template>
-	<!-- 外层容器用于居中 -->
 	<div class="identity-wrapper">
 		<div class="identity">
 			<img class="avatar" :src="avatarUrl" alt="avatar" />
@@ -9,20 +8,16 @@
 </template>
 
 <script setup>
-const avatarUrl = '/assets/avatar.jpg' // 放在 public/assets 下
+const avatarUrl = '/assets/avatar.jpg'
 </script>
 
 <style scoped>
-/* 外层容器：负责居中布局 */
 .identity-wrapper {
 	display: flex;
 	justify-content: center;
-	margin: 1rem auto;
-	margin-top: 1.5rem;
-	margin-bottom: 1rem;
+	margin: 1.5rem auto 1rem;
 }
 
-/* 内部身份组件样式 */
 .identity {
 	display: flex;
 	align-items: center;

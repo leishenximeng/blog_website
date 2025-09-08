@@ -3,16 +3,14 @@
 		<h1>欢迎来到我的主页</h1>
 		<p class="description">一个基于 Vue + SpringBoot 的博客系统。</p>
 
-		<!-- 高B格按钮区 -->
 		<div class="homepage-buttons">
-			<button @click="goTo('/blog')" class="cool-button">📚 博客</button>
-			<button @click="goTo('/profile')" class="cool-button">🧑 关于</button>
+			<button @click="goTo({ name: 'Blog' })" class="cool-button">📚 博客</button>
+			<button @click="goTo({ name: 'Profile' })" class="cool-button">🧑 关于</button>
 		</div>
 
 		<p class="tip">点击下方任一文章卡片，查看博客详情。</p>
 
-		<!-- 新增博客按钮 -->
-		<router-link to="/add">
+		<router-link :to="{ name: 'AddBlog' }">
 			<button class="add-button">➕ 新建博客</button>
 		</router-link>
 
@@ -35,8 +33,8 @@ const blogs = ref([])
 
 onMounted(async () => {
 	try {
-		const response = await axios.get('/api/posts')
-		blogs.value = response.data
+		const response = await axios.get('/api/posts') // ✅ 全局 baseURL
+		blogs.value = response.data.data
 	} catch (error) {
 		console.error('加载博客失败:', error)
 	}
@@ -46,10 +44,9 @@ function viewBlog(blog) {
 	router.push({ name: 'BlogDetail', params: { id: blog.id } })
 }
 
-function goTo(path) {
-	router.push(path)
+function goTo(routeObj) {
+	router.push(routeObj)
 }
-
 </script>
 
 <style scoped>
@@ -74,7 +71,6 @@ function goTo(path) {
 	transform: translateY(-3px);
 }
 
-/* 新增博客按钮样式 */
 .add-button {
 	margin: 1.5rem 0;
 	padding: 0.6rem 1.2rem;

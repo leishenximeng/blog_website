@@ -1,21 +1,27 @@
 package com.example.backend.mapper;
 
 import com.example.backend.model.BlogPost;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
 public interface BlogPostMapper {
 
+    @Select("SELECT * FROM blog_posts ORDER BY created_at DESC")
     List<BlogPost> findAll();
 
-    BlogPost findById(@Param("id") Long id);
+    @Select("SELECT * FROM blog_posts WHERE id = #{id}")
+    BlogPost findById(Long id);
 
-    int insert(BlogPost blogPost);
+    @Insert("INSERT INTO blog_posts(title, summary, content, created_at) " +
+            "VALUES(#{title}, #{summary}, #{content}, #{createdAt})")
+    void insert(BlogPost blogPost);
 
-    int update(BlogPost blogPost);
+    @Update("UPDATE blog_posts SET title=#{title}, summary=#{summary}, content=#{content} " +
+            "WHERE id=#{id}")
+    void update(BlogPost blogPost);
 
-    int deleteById(@Param("id") Long id);
+    @Delete("DELETE FROM blog_posts WHERE id=#{id}")
+    void delete(Long id);
 }

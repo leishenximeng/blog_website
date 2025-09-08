@@ -8,6 +8,10 @@ import 'animate.css'
 import './assets/style.css'
 
 import router from './router' // 引入路由
+import axios from 'axios'
+
+// ✅ 全局配置后端 baseURL
+axios.defaults.baseURL = 'http://localhost:8082' // 根据实际端口修改
 
 const app = createApp(App)
 

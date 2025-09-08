@@ -4,15 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class BlogPost {
     private Long id;
     private String title;
-    private String summary;    // ✅ 新增字段
+    private String summary;
     private String content;
-    private String createdAt;
-
-    // 如果你需要自定义构造函数，也可以自己写，否则Lombok会生成无参构造和全参构造
+    private LocalDateTime createdAt; // 改成 LocalDateTime
 }
