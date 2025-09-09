@@ -11,7 +11,9 @@
 			<label>内容：</label>
 			<textarea v-model="blog.content" rows="10" required></textarea>
 
-			<button type="submit">提交</button>
+			<button type="submit" :disabled="loading">
+				{{ loading ? '提交中...' : '提交' }}
+			</button>
 		</form>
 
 		<p v-if="message">{{ message }}</p>
@@ -21,7 +23,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '../utils/axios'
 
 const router = useRouter()
 const blog = ref({
@@ -31,11 +33,14 @@ const blog = ref({
 })
 
 const message = ref('')
+const loading = ref(false)
 
 async function submitBlog() {
+	loading.value = true
+	message.value = ''
 	try {
-		const res = await axios.post('/api/posts', blog.value) // ✅ 全局 baseURL
-		message.value = res.data.message
+		const res = await api.post('/posts', blog.value)
+		message.value = res.message || '提交成功！'
 
 		blog.value.title = ''
 		blog.value.summary = ''
@@ -43,7 +48,10 @@ async function submitBlog() {
 
 		router.push({ name: 'Blog' })
 	} catch (e) {
-		message.value = '提交失败：' + (e.response?.data?.message || e.message)
+		message.value = '提交失败：' + (e.message || '未知错误')
+		console.error('提交博客失败：', e)
+	} finally {
+		loading.value = false
 	}
 }
 </script>
@@ -52,9 +60,20 @@ async function submitBlog() {
 .form-container {
 	max-width: 600px;
 	margin: 2rem auto;
-	padding: 1rem;
-	border: 1px solid #ddd;
-	border-radius: 8px;
+	padding: 2rem;
+	border-radius: 12px;
+	background-color: rgba(255, 255, 255, 0.85);
+	/* 半透明白底 */
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2,
+label,
+p {
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+	/* 增加文字阴影 */
+	color: #333;
+	/* 深色文字更清晰 */
 }
 
 label {
@@ -67,6 +86,10 @@ textarea {
 	width: 100%;
 	padding: 0.5rem;
 	margin-top: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	background-color: #fff;
+	/* 输入框背景白色 */
 }
 
 button {
@@ -76,9 +99,16 @@ button {
 	color: white;
 	border: none;
 	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
 }
 
-button:hover {
+button:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+button:hover:enabled {
 	background-color: #1a5ed8;
 }
 </style>

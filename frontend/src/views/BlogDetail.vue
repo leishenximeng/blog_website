@@ -1,39 +1,46 @@
 <template>
 	<div class="page-container">
-		<h1>{{ blog.title }}</h1>
-		<p class="description">发布时间：{{ blog.createdAt }}</p>
-		<div class="blog-content">
-			<p v-for="(para, idx) in paragraphs" :key="idx">{{ para }}</p>
-		</div>
+		<!-- 加载中 -->
+		<p v-if="loading">加载中...</p>
 
-		<button class="back-button" @click="goBack">返回博客列表</button>
+		<!-- 错误提示 -->
+		<p v-else-if="error">{{ error }}</p>
+
+		<!-- 正常内容 -->
+		<template v-else>
+			<h1>{{ blog.title }}</h1>
+			<p class="description">发布时间：{{ blog.createdAt }}</p>
+			<div class="blog-content">
+				<p v-for="(para, idx) in paragraphs" :key="idx">{{ para }}</p>
+			</div>
+
+			<button class="back-button" @click="goBack">返回博客列表</button>
+		</template>
 	</div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '../utils/axios'
 
 const route = useRoute()
 const router = useRouter()
 
-const blog = ref({
-	title: '',
-	summary: '',
-	content: '',
-	createdAt: ''
-})
-
+const blog = ref({})
 const paragraphs = ref([])
+const loading = ref(true)
+const error = ref('')
 
 onMounted(async () => {
 	const id = route.params.id
 	try {
-		const res = await axios.get(`/api/posts/${id}`) // ✅ 全局 baseURL
-		blog.value = res.data.data
-		paragraphs.value = blog.value.content.split('\n').filter(line => line.trim())
+		const res = await api.get(`/posts/${id}`)
+		// res 已经是 ApiResponse<T>，data 是博客对象
+		blog.value = res.data || {}
+		paragraphs.value = blog.value.content?.split('\n').filter(line => line.trim()) || []
 	} catch (e) {
+		error.value = '加载文章失败'
 		blog.value = {
 			title: '文章未找到',
 			summary: '',
@@ -41,6 +48,8 @@ onMounted(async () => {
 			createdAt: ''
 		}
 		paragraphs.value = ['你请求的文章不存在。']
+	} finally {
+		loading.value = false
 	}
 })
 
@@ -50,6 +59,22 @@ function goBack() {
 </script>
 
 <style scoped>
+.page-container {
+	max-width: 800px;
+	margin: 2rem auto;
+	background-color: rgba(255, 255, 255, 0.85);
+	padding: 2rem;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	text-align: center;
+}
+
+h1,
+p {
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+	color: #333;
+}
+
 .blog-content {
 	text-align: left;
 	margin-top: 2rem;

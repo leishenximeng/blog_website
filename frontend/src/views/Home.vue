@@ -14,11 +14,18 @@
 			<button class="add-button">➕ 新建博客</button>
 		</router-link>
 
-		<div class="blog-list">
+		<!-- 加载中 -->
+		<p v-if="loading">加载中...</p>
+		<!-- 错误提示 -->
+		<p v-else-if="error">{{ error }}</p>
+		<!-- 博客列表 -->
+		<div v-else class="blog-list">
 			<div class="blog-card" v-for="blog in blogs" :key="blog.id" @click="viewBlog(blog)">
 				<h3>{{ blog.title }}</h3>
 				<p>{{ blog.summary }}</p>
 			</div>
+			<!-- 没有文章 -->
+			<p v-if="!blogs.length">暂无博客文章</p>
 		</div>
 	</div>
 </template>
@@ -26,17 +33,23 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import api from '../utils/axios'
 
 const router = useRouter()
 const blogs = ref([])
+const loading = ref(true)
+const error = ref('')
 
 onMounted(async () => {
 	try {
-		const response = await axios.get('/api/posts') // ✅ 全局 baseURL
-		blogs.value = response.data.data
-	} catch (error) {
-		console.error('加载博客失败:', error)
+		const res = await api.get('/posts')
+		// res 已经是 ApiResponse
+		blogs.value = res.data || []
+	} catch (err) {
+		console.error('加载博客失败:', err)
+		error.value = '加载博客失败'
+	} finally {
+		loading.value = false
 	}
 })
 
@@ -50,6 +63,24 @@ function goTo(routeObj) {
 </script>
 
 <style scoped>
+.page-container {
+	max-width: 800px;
+	margin: 2rem auto;
+	background-color: rgba(255, 255, 255, 0.85);
+	/* 半透明白底 */
+	padding: 2rem;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	text-align: center;
+}
+
+h1,
+p {
+	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+	color: #333;
+}
+
+/* 原有样式保持不变 */
 .blog-list {
 	display: flex;
 	flex-direction: column;
