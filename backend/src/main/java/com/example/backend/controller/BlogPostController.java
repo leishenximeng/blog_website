@@ -1,9 +1,8 @@
 package com.example.backend.controller;
 
 import com.example.backend.common.ApiResponse;
-import com.example.backend.mapper.BlogPostMapper;
 import com.example.backend.model.BlogPost;
-import org.springframework.http.ResponseEntity;
+import com.example.backend.service.BlogPostService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -11,25 +10,25 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
-public class BlogController {
+public class BlogPostController {  // ✅ 统一命名
 
-    private final BlogPostMapper blogPostMapper;
+    private final BlogPostService blogPostService;
 
-    public BlogController(BlogPostMapper blogPostMapper) {
-        this.blogPostMapper = blogPostMapper;
+    public BlogPostController(BlogPostService blogPostService) {
+        this.blogPostService = blogPostService;
     }
 
     // 查询所有文章
     @GetMapping
     public ApiResponse<List<BlogPost>> getAllPosts() {
-        List<BlogPost> posts = blogPostMapper.findAll();
+        List<BlogPost> posts = blogPostService.findAll();
         return ApiResponse.success(posts);
     }
 
     // 根据ID查询文章
     @GetMapping("/{id}")
     public ApiResponse<BlogPost> getPostById(@PathVariable Long id) {
-        BlogPost post = blogPostMapper.findById(id);
+        BlogPost post = blogPostService.findById(id);
         if (post == null) {
             return ApiResponse.error("文章不存在");
         }
@@ -47,30 +46,30 @@ public class BlogController {
             blogPost.setCreatedAt(LocalDateTime.now());
         }
 
-        blogPostMapper.insert(blogPost);
+        blogPostService.insert(blogPost);
         return ApiResponse.success("博客添加成功");
     }
 
     // 更新文章
     @PutMapping("/{id}")
     public ApiResponse<String> updateBlog(@PathVariable Long id, @RequestBody BlogPost blogPost) {
-        BlogPost existing = blogPostMapper.findById(id);
+        BlogPost existing = blogPostService.findById(id);
         if (existing == null) {
             return ApiResponse.error("文章不存在");
         }
         blogPost.setId(id);
-        blogPostMapper.update(blogPost);
+        blogPostService.update(blogPost);
         return ApiResponse.success("博客更新成功");
     }
 
     // 删除文章
     @DeleteMapping("/{id}")
     public ApiResponse<String> deleteBlog(@PathVariable Long id) {
-        BlogPost existing = blogPostMapper.findById(id);
+        BlogPost existing = blogPostService.findById(id);
         if (existing == null) {
             return ApiResponse.error("文章不存在");
         }
-        blogPostMapper.delete(id);
+        blogPostService.delete(id);
         return ApiResponse.success("博客删除成功");
     }
 }

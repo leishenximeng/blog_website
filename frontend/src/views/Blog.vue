@@ -8,33 +8,38 @@
 		<!-- 错误提示 -->
 		<p v-else-if="error">{{ error }}</p>
 
-		<!-- 没有文章 -->
-		<p v-else-if="!posts.length">暂无博客文章</p>
-
 		<!-- 博客列表 -->
-		<ul v-else>
-			<li v-for="post in posts" :key="post.id">
-				<router-link :to="{ name: 'BlogDetail', params: { id: post.id } }">
-					{{ post.title }}
-				</router-link>
-				<p>{{ post.summary }}</p>
-			</li>
-		</ul>
+		<div v-else class="blog-list">
+			<div class="blog-card" v-for="post in posts" :key="post.id">
+				<div class="blog-content" @click="viewBlog(post)">
+					<h3>{{ post.title }}</h3>
+					<p>{{ post.summary }}</p>
+				</div>
+
+				<!-- 删除按钮 -->
+				<button class="delete-btn" @click.stop="deleteBlog(post.id)">删除</button>
+			</div>
+
+			<p v-if="!posts.length">暂无博客文章</p>
+		</div>
 	</div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import api from '../utils/axios'
 
+const router = useRouter()
 const posts = ref([])
 const loading = ref(true)
 const error = ref('')
 
-onMounted(async () => {
+async function fetchPosts() {
+	loading.value = true
+	error.value = ''
 	try {
 		const res = await api.get('/posts')
-		// ✅ res 已经是 ApiResponse
 		posts.value = res.data ?? []
 	} catch (e) {
 		console.error('获取博客列表失败：', e)
@@ -42,9 +47,27 @@ onMounted(async () => {
 	} finally {
 		loading.value = false
 	}
-})
-</script>
+}
 
+onMounted(fetchPosts)
+
+function viewBlog(post) {
+	router.push({ name: 'BlogDetail', params: { id: post.id } })
+}
+
+// 删除博客
+async function deleteBlog(id) {
+	if (!confirm('确定要删除这篇博客吗？')) return
+	try {
+		await api.delete(`/posts/${id}`)
+		alert('删除成功')
+		await fetchPosts()
+	} catch (err) {
+		console.error('删除博客失败:', err)
+		alert('删除失败')
+	}
+}
+</script>
 
 <style scoped>
 .page-container {
@@ -63,18 +86,48 @@ p {
 	color: #333;
 }
 
-ul {
-	list-style: none;
-	padding: 0;
+.blog-list {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-top: 2rem;
 }
 
-li {
-	margin-bottom: 1.5rem;
-	border-bottom: 1px solid #ddd;
-	padding-bottom: 1rem;
+.blog-card {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 12px;
+	padding: 1rem;
+	cursor: default;
+	transition: all 0.3s ease;
 }
 
-p {
-	color: #555;
+.blog-card:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	transform: translateY(-3px);
+}
+
+.blog-content {
+	flex: 1;
+	cursor: pointer;
+	text-align: left;
+}
+
+/* 删除按钮 */
+.delete-btn {
+	margin-left: 1rem;
+	padding: 0.3rem 0.6rem;
+	background-color: #dc3545;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.delete-btn:hover {
+	background-color: #c82333;
 }
 </style>

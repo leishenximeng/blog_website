@@ -6,44 +6,50 @@ import Blog from '../views/Blog.vue'
 import Profile from '../views/Profile.vue'
 import BlogDetail from '../views/BlogDetail.vue'
 import AddBlog from '../views/AddBlog.vue'
+import Login from '../views/Login.vue'
+import Register from '../views/Register.vue'
 
 const routes = [
-  // 首页
-  { path: '/', name: 'Home', component: Home },
+	{ path: '/', name: 'Home', component: Home },
 
-  // 博客列表页
-  { path: '/blog', name: 'Blog', component: Blog },
+	{ path: '/login', name: 'Login', component: Login },
+	{ path: '/register', name: 'Register', component: Register },
 
-  // 个人资料页
-  { path: '/profile', name: 'Profile', component: Profile },
-
-  // 博客详情页
-  {
-    path: '/blog/:id',
-    name: 'BlogDetail',
-    component: BlogDetail,
-    props: true // ✅ 让组件直接接收 id 参数
-    // 建议：
-    // 在组件内部可以直接用 props.id 获取文章ID，也可以继续用 useRoute().params.id，两种方式都支持
-    // 跳转示例：router.push({ name: 'BlogDetail', params: { id: post.id } })
-  },
-
-  // 新建博客页
-  {
-    path: '/add-blog', // ✅ 建议将路径明确为 /add-blog，避免 /add 太模糊
-    name: 'AddBlog',
-    component: AddBlog
-    // 建议：
-    // 这个页面用于创建新文章，和后端 POST /api/posts 对接
-  }
+	{ path: '/blog', name: 'Blog', component: Blog, meta: { requiresAuth: true } },
+	{ path: '/profile', name: 'Profile', component: Profile, meta: { requiresAuth: true } },
+	{
+		path: '/blog/:id',
+		name: 'BlogDetail',
+		component: BlogDetail,
+		props: true,
+		meta: { requiresAuth: true }
+	},
+	{
+		path: '/add-blog',
+		name: 'AddBlog',
+		component: AddBlog,
+		meta: { requiresAuth: true }
+	}
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes
+	history: createWebHistory(),
+	routes
 })
 
-// 全局导航守卫（可选）
-// 如果后续增加登录认证，可以在这里判断用户是否登录，再决定是否允许访问某些路由
+// 全局导航守卫
+router.beforeEach((to, from, next) => {
+	const token = localStorage.getItem('token') // 登录成功后存储的 token
+
+	if (to.meta.requiresAuth && !token) {
+		// 未登录且访问需要登录的页面 → 重定向到登录页
+		next({ name: 'Login' })
+	} else if ((to.name === 'Login' || to.name === 'Register') && token) {
+		// 已登录访问登录/注册页 → 重定向到首页或博客管理页
+		next({ name: 'Blog' })
+	} else {
+		next()
+	}
+})
 
 export default router

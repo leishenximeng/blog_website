@@ -61,6 +61,12 @@
 			<version>3.0.3</version>  <!-- 版本可以根据需要调整 -->
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>

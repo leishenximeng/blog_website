@@ -1,18 +1,21 @@
 package com.example.backend.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
+/**
+ * 博客文章实体类
+ */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class BlogPost {
     private Long id;
     private String title;
     private String summary;
     private String content;
-    private LocalDateTime createdAt; // 改成 LocalDateTime
+    private LocalDateTime createdAt; // 推荐数据库字段名：created_at
 }
