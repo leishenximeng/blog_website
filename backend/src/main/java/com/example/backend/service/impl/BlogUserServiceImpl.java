@@ -6,8 +6,6 @@ import com.example.backend.service.BlogUserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 public class BlogUserServiceImpl implements BlogUserService {
 
@@ -25,9 +23,8 @@ public class BlogUserServiceImpl implements BlogUserService {
 
     @Override
     public void register(BlogUser blogUser) {
+        // 加密密码
         blogUser.setPassword(passwordEncoder.encode(blogUser.getPassword()));
-        blogUser.setRole("user");
-        blogUser.setCreatedAt(LocalDateTime.now());
         blogUserMapper.insert(blogUser);
     }
 

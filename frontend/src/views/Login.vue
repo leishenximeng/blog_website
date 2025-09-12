@@ -1,55 +1,46 @@
 <template>
-	<div class="login-container">
-		<h2>用户登录</h2>
-
+	<div class="auth-container">
+		<h2>登录</h2>
 		<form @submit.prevent="login">
 			<label>用户名：</label>
-			<input v-model="username" type="text" required />
+			<input v-model="username" required />
 
 			<label>密码：</label>
-			<input v-model="password" type="password" required />
+			<input type="password" v-model="password" required />
 
-			<button type="submit" :disabled="loading">
-				{{ loading ? '登录中...' : '登录' }}
-			</button>
+			<button type="submit">{{ loading ? '登录中...' : '登录' }}</button>
 		</form>
-
-		<p class="message" v-if="message">{{ message }}</p>
-
-		<p class="tip">
-			没有账号？<router-link to="/register">注册</router-link>
-		</p>
+		<p v-if="errorMsg" class="error">{{ errorMsg }}</p>
+		<p>还没有账号？ <router-link to="/register">注册</router-link></p>
 	</div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import api from '../utils/axios' // 你封装好的 Axios 实例
+import api from '../utils/axios'
 
 const router = useRouter()
 const username = ref('')
 const password = ref('')
-const message = ref('')
+const errorMsg = ref('')
 const loading = ref(false)
 
 async function login() {
 	loading.value = true
-	message.value = ''
+	errorMsg.value = ''
 	try {
-		const res = await api.post('/login', { username: username.value, password: password.value })
-		// 假设后端返回 { token: '...' } 或类似
-		const token = res.data?.token
-		if (token) {
-			localStorage.setItem('token', token)
-			message.value = '登录成功！'
-			router.push({ name: 'Blog' }) // 登录成功跳转博客管理页
-		} else {
-			message.value = res.message || '登录失败'
-		}
+		const res = await api.post('/users/login', {
+			username: username.value,
+			password: password.value
+		})
+		alert(res.message || '登录成功')
+		// 登录成功，存个标记（简单示例）
+		localStorage.setItem('token', 'logged_in')
+		router.push({ name: 'Blog' })
 	} catch (err) {
-		console.error('登录失败：', err)
-		message.value = err.response?.data?.message || '登录请求失败'
+		console.error(err)
+		errorMsg.value = err.response?.data?.message || '登录失败'
 	} finally {
 		loading.value = false
 	}
@@ -57,38 +48,28 @@ async function login() {
 </script>
 
 <style scoped>
-.login-container {
+.auth-container {
 	max-width: 400px;
-	margin: 4rem auto;
+	margin: 3rem auto;
 	padding: 2rem;
-	background-color: rgba(255, 255, 255, 0.9);
-	border-radius: 12px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 10px;
 	text-align: center;
-}
-
-label {
-	display: block;
-	margin-top: 1rem;
-	text-align: left;
 }
 
 input {
 	width: 100%;
-	padding: 0.5rem;
 	margin-top: 0.5rem;
-	border-radius: 6px;
-	border: 1px solid #ccc;
+	padding: 0.5rem;
 }
 
 button {
-	margin-top: 1.5rem;
+	margin-top: 1rem;
 	padding: 0.6rem 1.2rem;
-	font-size: 1rem;
 	background-color: #2575fc;
 	color: white;
 	border: none;
-	border-radius: 8px;
+	border-radius: 6px;
 	cursor: pointer;
 }
 
@@ -97,16 +78,8 @@ button:disabled {
 	cursor: not-allowed;
 }
 
-button:hover:enabled {
-	background-color: #1a5ed8;
-}
-
-.message {
+.error {
 	color: red;
 	margin-top: 1rem;
-}
-
-.tip {
-	margin-top: 1.5rem;
 }
 </style>

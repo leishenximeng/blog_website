@@ -9,7 +9,6 @@ public interface BlogUserMapper {
     @Select("SELECT * FROM blog_user WHERE username = #{username}")
     BlogUser findByUsername(String username);
 
-    @Insert("INSERT INTO blog_user(username, password, role, created_at) " +
-            "VALUES(#{username}, #{password}, #{role}, #{createdAt})")
+    @Insert("INSERT INTO blog_user(username, password, created_at) VALUES(#{username}, #{password}, NOW())")
     void insert(BlogUser blogUser);
 }
