@@ -62,7 +62,11 @@ npm run dev
 4. Open your browser and go to:
 
 ```
+<<<<<<< HEAD
 http://localhost:5175
+=======
+http://localhost:5173
+>>>>>>> e13c8b1 (feat: add logout functionality and update README)
 ```
 
 ## Features

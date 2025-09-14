@@ -1,6 +1,11 @@
 <template>
 	<div class="page-container">
-		<h1>欢迎来到我的主页</h1>
+		<div class="header">
+			<h1>欢迎来到我的主页</h1>
+			<!-- 退出登录按钮 -->
+			<button class="logout-btn" @click="logout">退出登录</button>
+		</div>
+
 		<p class="description">一个基于 Vue + SpringBoot 的博客系统。</p>
 
 		<div class="homepage-buttons">
@@ -82,6 +87,13 @@ async function deleteBlog(id) {
 		alert('删除失败')
 	}
 }
+
+// 退出登录
+function logout() {
+	localStorage.removeItem('token') // 清除本地 token
+	alert('已退出登录')
+	router.push({ name: 'Login' }) // 跳转到登录页
+}
 </script>
 
 <style scoped>
@@ -93,6 +105,28 @@ async function deleteBlog(id) {
 	border-radius: 12px;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	text-align: center;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+.logout-btn {
+	padding: 0.4rem 1rem;
+	font-size: 0.9rem;
+	background-color: #ff4d4f;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+	background-color: #d9363e;
 }
 
 h1,
